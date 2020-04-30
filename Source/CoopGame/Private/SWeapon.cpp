@@ -79,6 +79,11 @@ void ASWeapon::Fire()
 				TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
 			}
 		}
+
+		if (ShootSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, GetActorLocation(), 10.0f);
+		}
 	}
 
 }

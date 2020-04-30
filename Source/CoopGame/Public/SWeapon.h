@@ -9,6 +9,7 @@
 class USkeletalMeshComponent;
 class UDamageType;
 class UParticleSystem;
+class USoundBase;
 
 UCLASS()
 class COOPGAME_API ASWeapon : public AActor
@@ -46,6 +47,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	UParticleSystem* TracerEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	USoundBase* ShootSound;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
