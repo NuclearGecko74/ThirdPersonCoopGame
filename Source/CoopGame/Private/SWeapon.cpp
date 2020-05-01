@@ -8,6 +8,9 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
+#define SURFACE_FLESHDEFAULT		SurfaceType1
+#define SURFACE_FLESHVULNERABLE		SurfaceType2
+
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(TEXT("COOP.DebugWeapons"), DebugWeaponDrawing, TEXT("Draw Debug Lines for Weapons"), ECVF_Cheat);
 
@@ -22,6 +25,8 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MuzzleFlashSocket";
 	TracerTargetName = "BeamEnd";
+
+	BaseDamage = 20.0f;
 }
 
 // Called when the game starts or when spawned
@@ -91,15 +96,21 @@ void ASWeapon::Fire()
 		{
 			AActor* HitActor = Hit.GetActor();
 
-			UGameplayStatics::ApplyPointDamage(HitActor, 20.f, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
-
 			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+			float ActualDamage = BaseDamage;
+			if (SurfaceType = SURFACE_FLESHVULNERABLE)
+			{
+				ActualDamage *= 4.0f;
+			}
+
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 
 			UParticleSystem* SelectedEffect = nullptr;
 			switch (SurfaceType)
 			{
-			case SurfaceType1:
-			case SurfaceType2:
+			case SURFACE_FLESHDEFAULT:
+			case SURFACE_FLESHVULNERABLE:
 				SelectedEffect = FlashImpactEffect;
 				break;
 			default:
