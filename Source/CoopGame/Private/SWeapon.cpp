@@ -30,6 +30,30 @@ void ASWeapon::BeginPlay()
 	
 }
 
+void ASWeapon::PlayFireEffects(FVector TracerEndPoint, FHitResult Hit)
+{
+	if (MuzzleEffect)
+	{
+		UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
+	}
+
+	if (TracerEffect)
+	{
+		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+
+		UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
+		if (TracerComp)
+		{
+			TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
+		}
+	}
+
+	if (ShootSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ShootSound, GetActorLocation(), 10.0f);
+	}
+}
+
 void ASWeapon::Fire()
 {
 	AActor* MyOwner = GetOwner();
@@ -59,7 +83,7 @@ void ASWeapon::Fire()
 
 			if (ImpactEffect)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(),false);
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), false);
 			}
 
 			TracerEndPoint = Hit.ImpactPoint;
@@ -69,28 +93,8 @@ void ASWeapon::Fire()
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0.0f, 1.0f);
 		}
 
-		if (MuzzleEffect)
-		{
-			UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, MeshComp, MuzzleSocketName);
-		}
-
-		if (TracerEffect)
-		{
-			FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
-
-			UParticleSystemComponent* TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TracerEffect, MuzzleLocation);
-			if (TracerComp)
-			{
-				TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
-			}
-		}
-
-		if (ShootSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, ShootSound, GetActorLocation(), 10.0f);
-		}
+		PlayFireEffects(TracerEndPoint, Hit);
 	}
-
 }
 
 // Called every frame
