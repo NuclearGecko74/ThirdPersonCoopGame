@@ -46,6 +46,16 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint, FHitResult Hit)
 		{
 			TracerComp->SetVectorParameter(TracerTargetName, TracerEndPoint);
 		}
+
+		APawn* MyOwner = Cast<APawn>(GetOwner());
+		if (MyOwner)
+		{
+			APlayerController* PC = Cast<APlayerController>(MyOwner->GetController());
+			if (PC)
+			{
+				PC->ClientPlayCameraShake(FireCanShake);
+			}
+		}
 	}
 
 	if (ShootSound)

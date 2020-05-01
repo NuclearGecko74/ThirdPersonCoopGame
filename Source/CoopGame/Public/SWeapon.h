@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	USoundBase* ShootSound;
 
+	UPROPERTY(EditDefaultsOnly,  Category = "Weapon")
+	TSubclassOf<UCameraShake> FireCanShake;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
